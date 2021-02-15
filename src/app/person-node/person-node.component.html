@@ -1,24 +1,41 @@
-<cdk-tree [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl">
+<cdk-tree [dataSource]="treeSource" [treeControl]="nestedTreeControl">
   <cdk-nested-tree-node *cdkTreeNodeDef="let node" class="example-tree-node">
     <button mat-icon-button disabled></button>
+    <img style="height: 20px; width: 20px" [src]="node.imgUrl" />
     {{node.name}}:  {{node.jobTitle}}
+    <button mat-icon-button (click)="addNewItem(node)"><mat-icon>add</mat-icon></button>
   </cdk-nested-tree-node>
+
+  <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasNoContent" cdkTreeNodePadding>
+    <div class="new-input">
+      <mat-form-field>
+        <mat-label>Enter Name</mat-label>
+        <input matInput #Name maxlength="16" required placeholder="Name...">
+      </mat-form-field>
+      <mat-form-field hintLabel="Max 10 characters" appearance="fill">
+        <mat-label>Enter Job Title</mat-label>
+        <input matInput #Job maxlength="16" required placeholder="Job Title...">
+        <mat-hint align="end">{{Job?.value?.length || 0}}/16</mat-hint>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Image Url</mat-label>
+        <input matInput #Image required placeholder="Name...">
+      </mat-form-field>
+    </div>
+    <button mat-button btn btn-primary (click)="saveNode(node, Name.value, Job.value, Image.value)">Save</button>
+  </cdk-nested-tree-node>
+
   <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasNestedChild" class="example-tree-node">
     <button mat-icon-button [attr.aria-label]="'toggle ' + node.name" cdkTreeNodeToggle>
       <mat-icon class="mat-icon-rtl-mirror">
         {{nestedTreeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
       </mat-icon>
     </button>
+    <img style="height: 20px; width: 20px" [src]="node.imgUrl" />
     {{node.name}}:  {{node.jobTitle}}
+    <button mat-icon-button (click)="addNewItem(node)"><mat-icon>add</mat-icon></button>
     <div [class.example-tree-invisible]="!nestedTreeControl.isExpanded(node)">
       <ng-container cdkTreeNodeOutlet></ng-container>
     </div>
   </cdk-nested-tree-node>
 </cdk-tree>
-
-
-<!--id: number;-->
-<!--name: string;-->
-<!--jobTitle: string;-->
-<!--imgUrl: string;-->
-<!--children?: PersonNode[];-->

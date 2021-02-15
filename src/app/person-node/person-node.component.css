@@ -15,3 +15,9 @@
 .example-tree-node .example-tree-node {
   padding-left: 40px;
 }
+
+.new-input{
+  display: flex;
+  flex-direction: column;
+  width: 15em;
+}

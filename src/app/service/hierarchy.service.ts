@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import {PersonNode} from "../models/person-model";
+import { PersonNode} from "../models/person-model";
+import {BehaviorSubject, Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -9,40 +10,81 @@ export class HierarchyService {
     "id": 0,
     "name": "Admin",
     "jobTitle": "CEO",
-    "imgUrl": "some/url.gif",
+    "imgUrl": "https://www.w3schools.com/w3images/avatar1.png",
     "children": [{
       "id": 1,
       "name": "Co-Admin",
       "jobTitle": "CTO",
-      "imgUrl": "some/url2.gif",
+      "imgUrl": "https://www.w3schools.com/w3images/avatar3.png",
       "children": [{
-        "id": 4,
+        "id": 3,
         "name": "devi",
         "jobTitle": "developer",
-        "imgUrl": "some/url4.gif"
+        "imgUrl": "https://www.w3schools.com/w3images/avatar6.png"
       }],
     }, {
-      "id": 3,
+      "id": 2,
       "name": "Co-Admin",
       "jobTitle": "VP",
-      "imgUrl": "some/url3.gif"
+      "imgUrl": "https://www.w3schools.com/w3images/avatar2.png"
     }]
   }]
 
-  // dataChange: BehaviorSubject<TodoItemNode[]> = new BehaviorSubject<TodoItemNode[]>([]);
-  //
-  // get data(): TodoItemNode[] { return this.dataChange.value; }
-  //
-  // constructor() {
-  //   this.initialize();
-  // }
-  //
-  // initialize() {
-  //   // Build the tree nodes from Json object. The result is a list of `TodoItemNode` with nested
-  //   //     file node as children.
-  //   const data = this.buildFileTree(TREE_DATA, 0);
-  //
-  //   // Notify the change.
-  //   this.dataChange.next(data);
-  // }
+  dataChange: BehaviorSubject<PersonNode[]> = new BehaviorSubject<PersonNode[]>([]);
+  _nextId: number = -1;
+
+  constructor() {
+    this.initialize();
+  }
+
+  initialize() {
+    this.dataChange.next(this.TREE_DATA);
+    this.getLastId(this.TREE_DATA[0]);
+  }
+
+  get data(): PersonNode[] { return this.dataChange.value; }
+
+  getLastId(obj) {
+    let id = -1;
+    let iterateObj = (obj) => {
+      Object.keys(obj).forEach(function (key) {
+        if(key === 'id')
+          id = Math.max(id, obj[key]);
+        if (typeof obj[key] === 'object') {
+          return iterateObj(obj[key]);
+        }
+
+      });
+    }
+    iterateObj(obj);
+    this._nextId = id;
+  }
+
+
+  appendNewNode(node: PersonNode, newObj: PersonNode){
+    console.log(node);
+    const child = <PersonNode>{
+      name: newObj.name,
+      id: ++this._nextId,
+      jobTitle:newObj.jobTitle,
+      imgUrl: newObj.imgUrl
+    };
+      if (node.children) {
+        node.children.push(child);
+        this.dataChange.next(this.data);
+      }
+      else {
+        node.children = [];
+        node.children.push(child);
+        this.dataChange.next(this.data);
+      }
+  }
+
+  updateItem(node: PersonNode, noodeDetails: PersonNode) {
+    node.name = noodeDetails.name;
+    node.jobTitle = noodeDetails.jobTitle;
+    node.imgUrl = noodeDetails.imgUrl;
+    this.dataChange.next(this.data);
+  }
+
 }

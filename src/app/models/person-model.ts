@@ -9,13 +9,6 @@ export class PersonNode {
   imgUrl: string;
   children?: PersonNode[];
 }
-//
-// export class Person {
-//   name: string;
-//   jobTitle: string;
-//   imgUrl: string;
-//   id: number;
-// }
 
 
 
